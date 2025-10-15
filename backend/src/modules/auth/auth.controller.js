@@ -5,34 +5,37 @@ import jwt from "jsonwebtoken";
 /* --- REGISTER --- */
 export const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, confirm } = req.body;
 
-    // Kiểm tra thiếu thông tin
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !confirm) {
       return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin." });
     }
 
-    // Kiểm tra email đã tồn tại
-    const isCheckEmail = await User.findOne({ email });
-    if (isCheckEmail) {
-      return res
-        .status(400)
-        .json({ message: `Email ${email} đã tồn tại, vui lòng nhập email khác.` });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Email không hợp lệ." });
     }
 
-    // Mã hóa mật khẩu
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (password !== confirm) {
+      return res.status(400).json({ message: "Mật khẩu xác nhận không khớp." });
+    }
 
-    // Tạo user
-    const user = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
+    const strength = checkPasswordStrength(password);
+    if (strength.level === "Yếu") {
+      return res.status(400).json({
+        message: "Mật khẩu quá yếu. Dùng ít nhất 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+      });
+    }
 
-    // Trả phản hồi
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ message: "Email đã tồn tại." });
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ username, email, password: hashed });
+
     return res.status(201).json({
-      message: `Đăng ký thành công.`,
+      message: "Đăng ký thành công.",
+      passwordStrength: strength.level,
       user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (err) {
@@ -45,34 +48,48 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Kiểm tra thiếu thông tin
     if (!email || !password)
       return res.status(400).json({ message: "Vui lòng nhập email và mật khẩu." });
 
-    // Kiểm tra email có tồn tại
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(404).json({ message: `Email này chưa được đăng ký.` });
+      return res.status(404).json({ message: "Email này chưa được đăng ký." });
 
-    // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Mật khẩu không đúng." });
 
-    // Tạo token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    // Trả phản hồi thành công
-    return res.json({
-      message: `Đăng nhập thành công.`,
+    res.json({
+      message: "Đăng nhập thành công.",
       token,
-      user: { id: user._id, email: user.email, username: user.username },
+      user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (err) {
     console.error("Lỗi login:", err);
     res.status(500).json({ message: "Lỗi server: " + err.message });
   }
 };
+
+/* --- ✅ Hàm kiểm tra độ mạnh mật khẩu backend --- */
+function checkPasswordStrength(password) {
+  const hasUpper   = /[A-Z]/.test(password);
+  const hasLower   = /[a-z]/.test(password);
+  const hasNumber  = /[0-9]/.test(password);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const isLong     = password.length >= 8;
+
+  let score = 0;
+  if (hasUpper) score++;
+  if (hasLower) score++;
+  if (hasNumber) score++;
+  if (hasSpecial) score++;
+  if (isLong) score++;
+
+  if (score <= 2) return { level: "Yếu" };
+  if (score === 3 || score === 4) return { level: "Trung bình" };
+  return { level: "Mạnh" };
+}

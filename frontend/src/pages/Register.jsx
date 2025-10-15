@@ -1,37 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import PasswordInput from "../components/PasswordInput";
 
-// Dùng ảnh hero riêng cho Register
-// Cách 1: new URL (ổn định với Vite)
 const heroImg = new URL("../assets/taixuong.jpg", import.meta.url).href;
-// Cách 2: nếu bạn có barrel export: import { AnhTest as heroImg } from "../assets";
 
 export default function Register() {
   const nav = useNavigate();
   const { register } = useAuth();
 
   const [username, setUsername] = useState("");
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm]   = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [strength, setStrength] = useState({ level: "", color: "" });
+
+  // ✅ Kiểm tra độ mạnh mật khẩu realtime
+  useEffect(() => {
+    if (!password) return setStrength({ level: "", color: "" });
+    setStrength(checkPasswordStrength(password));
+  }, [password]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!username || !email || !password) {
-      setError("Vui lòng nhập đủ Tên, Email và Mật khẩu.");
+    if (!username || !email || !password || !confirm) {
+      setError("Vui lòng nhập đủ Tên, Email, Mật khẩu và Xác nhận.");
       return;
     }
-    if (password.length < 6) {
-      setError("Mật khẩu tối thiểu 6 ký tự.");
-      return;
-    }
+
     if (confirm !== password) {
       setError("Xác nhận mật khẩu chưa khớp.");
       return;
@@ -39,7 +40,8 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await register(email, password, username);
+      // ✅ Gọi đúng format theo AuthContext (email, password, confirm, username)
+      await register(email, password, confirm, username);
       nav("/login");
     } catch (err) {
       setError(err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.");
@@ -60,7 +62,7 @@ export default function Register() {
           </div>
         </div>
 
-        {/* RIGHT: form đăng ký */}
+        {/* RIGHT: form */}
         <div className="login-form">
           <h1 className="title">Đăng ký</h1>
 
@@ -92,6 +94,19 @@ export default function Register() {
               autoComplete="new-password"
             />
 
+            {/* ✅ Hiển thị độ mạnh mật khẩu */}
+            {strength.level && (
+              <p
+                style={{
+                  color: strength.color,
+                  fontSize: 14,
+                  marginTop: 4,
+                }}
+              >
+                Độ mạnh: {strength.level}
+              </p>
+            )}
+
             <label className="label">Xác nhận mật khẩu</label>
             <PasswordInput
               value={confirm}
@@ -108,10 +123,33 @@ export default function Register() {
           </form>
 
           <p className="signup">
-            Đã có tài khoản? <Link className="link" to="/login">Đăng nhập</Link>
+            Đã có tài khoản?{" "}
+            <Link className="link" to="/login">
+              Đăng nhập
+            </Link>
           </p>
         </div>
       </div>
     </div>
   );
+}
+
+/* --- ✅ Hàm kiểm tra độ mạnh mật khẩu frontend --- */
+function checkPasswordStrength(password) {
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const isLong = password.length >= 8;
+
+  let score = 0;
+  if (hasUpper) score++;
+  if (hasLower) score++;
+  if (hasNumber) score++;
+  if (hasSpecial) score++;
+  if (isLong) score++;
+
+  if (score <= 2) return { level: "Yếu", color: "red" };
+  if (score === 3 || score === 4) return { level: "Trung bình", color: "orange" };
+  return { level: "Mạnh", color: "green" };
 }
