@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import "./Login.css";
+import PasswordInput from "../components/PasswordInput";
+import { AnhTest as heroImg } from "../assets"; // hoặc dùng new URL giống Register
 
 export default function Login() {
   const nav = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [remember, setRemember] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -16,10 +20,9 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, remember);
       nav("/");
     } catch (err) {
-      // hiển thị lỗi duy nhất
       setError("Sai email hoặc mật khẩu");
     } finally {
       setLoading(false);
@@ -27,37 +30,60 @@ export default function Login() {
   };
 
   return (
-    <div className="card">
-      <h1 className="text-xl font-semibold mb-4">Đăng nhập</h1>
-      <form className="space-y-3" onSubmit={onSubmit}>
-        <input
-          className="input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /><br />
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-hero" aria-hidden>
+          <img src={heroImg} alt="Hero" className="hero-image" />
+          <div className="hero-overlay">
+            <h2>Welcome back</h2>
+            <p>Quản lý công việc, hoàn thành mục tiêu mỗi ngày.</p>
+          </div>
+        </div>
 
-        <input
-          className="input"
-          type="password"
-          placeholder="Mật khẩu"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        /><br />
+        <div className="login-form">
+          <h1 className="title">Đăng nhập</h1>
+          <form onSubmit={onSubmit}>
+            <label className="label">Email</label>
+            <input
+              className="input"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+            <label className="label">Mật khẩu</label>
+            <PasswordInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Mật khẩu"
+              autoComplete="current-password"
+            />
 
-        <button className="btn" disabled={loading}>
-          {loading ? "Đang đăng nhập..." : "Đăng nhập"}
-        </button>
-      </form>
+            {error && <p className="error">{error}</p>}
 
-      <p className="mt-3 text-sm">
-        Chưa có tài khoản?{" "}
-        <Link className="link" to="/register">
-          Đăng ký
-        </Link>
-      </p>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6}}>
+              <input
+                id="remember"
+                type="checkbox"
+                checked={remember}
+                onChange={(e)=>setRemember(e.target.checked)}
+              />
+              <label htmlFor="remember" style={{fontSize:13,color:'#6b7280'}}>
+                Ghi nhớ đăng nhập
+              </label>
+            </div>
+
+            <button className="btn" disabled={loading} style={{marginTop:12}}>
+              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </button>
+          </form>
+
+          <p className="signup">
+            Chưa có tài khoản? <Link className="link" to="/register">Đăng ký</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
