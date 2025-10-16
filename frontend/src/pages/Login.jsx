@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import PasswordInput from "../components/PasswordInput";
-import { AnhTest as heroImg } from "../assets"; // hoặc dùng new URL giống Register
+import { LoginBg as heroImg } from "../assets";
 
 export default function Login() {
   const nav = useNavigate();

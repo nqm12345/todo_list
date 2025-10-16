@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import PasswordInput from "../components/PasswordInput";
 
-const heroImg = new URL("../assets/taixuong.jpg", import.meta.url).href;
+import { RegisterBg as heroImg } from "../assets";
 
 export default function Register() {
   const nav = useNavigate();

@@ -5,19 +5,15 @@ import jwt from "jsonwebtoken";
 /* --- REGISTER --- */
 export const register = async (req, res) => {
   try {
-    const { username, email, password, confirm } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !email || !password || !confirm) {
+    if (!username || !email || !password) {
       return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin." });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Email không hợp lệ." });
-    }
-
-    if (password !== confirm) {
-      return res.status(400).json({ message: "Mật khẩu xác nhận không khớp." });
     }
 
     const strength = checkPasswordStrength(password);
