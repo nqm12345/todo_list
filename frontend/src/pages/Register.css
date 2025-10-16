@@ -1,0 +1,45 @@
+/* Register page inherits Login.css styles */
+/* Additional styles specific to Register if needed */
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f5f7fb 0%, #fff 100%);
+  padding: 2rem;
+}
+
+.register-card {
+  width: 900px;
+  max-width: calc(100% - 3rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 30px rgba(16, 24, 40, 0.08);
+  overflow: hidden;
+}
+
+.register-hero {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(99, 102, 241, 0.04));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register-form {
+  padding: 2.5rem;
+}
+
+@media (max-width: 720px) {
+  .register-card {
+    grid-template-columns: 1fr;
+  }
+  .register-hero {
+    display: none;
+  }
+}
