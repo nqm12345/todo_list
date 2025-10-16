@@ -157,11 +157,18 @@ export default function Tasks() {
               <p>Đang tải...</p>
             </div>
           ) : (
-            <TaskList
-              tasks={tasks}
-              onEdit={handleEdit}
-              onRefresh={fetchTasks}
-            />
+            <>
+              {filteredTasks.length === 0 && searchQuery && (
+                <div className="no-results">
+                  <p>Không tìm thấy công việc nào với từ khóa "{searchQuery}"</p>
+                </div>
+              )}
+              <TaskList
+                tasks={filteredTasks}
+                onEdit={handleEdit}
+                onRefresh={fetchTasks}
+              />
+            </>
           )}
         </div>
       </div>
