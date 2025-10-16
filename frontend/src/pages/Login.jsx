@@ -62,19 +62,19 @@ export default function Login() {
 
             {error && <p className="error">{error}</p>}
 
-            <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6}}>
+            <div className="remember-checkbox">
               <input
                 id="remember"
                 type="checkbox"
                 checked={remember}
                 onChange={(e)=>setRemember(e.target.checked)}
               />
-              <label htmlFor="remember" style={{fontSize:13,color:'#6b7280'}}>
+              <label htmlFor="remember">
                 Ghi nhớ đăng nhập
               </label>
             </div>
 
-            <button className="btn" disabled={loading} style={{marginTop:12}}>
+            <button className="btn" disabled={loading}>
               {loading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
           </form>

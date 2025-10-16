@@ -12,6 +12,8 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const fetchTasks = async () => {
     try {
@@ -45,6 +47,14 @@ export default function Tasks() {
     setShowForm(false);
     setEditingTask(null);
   };
+
+  // ✅ Lọc tasks theo search query và filter status
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesStatus = filterStatus === "all" || task.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const stats = {
     total: tasks.length,
@@ -82,6 +92,46 @@ export default function Tasks() {
           <div className="stat-card stat-completed">
             <div className="stat-value">{stats.completed}</div>
             <div className="stat-label">Hoàn thành</div>
+          </div>
+        </div>
+
+        {/* ✅ Search và Filter Bar */}
+        <div className="search-filter-bar">
+          <div className="search-box">
+            <svg className="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Tìm kiếm công việc theo tiêu đề hoặc mô tả..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button 
+                className="clear-search"
+                onClick={() => setSearchQuery("")}
+                aria-label="Xóa tìm kiếm"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="filter-box">
+            <label htmlFor="status-filter" className="filter-label">Trạng thái:</label>
+            <select
+              id="status-filter"
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="all">Tất cả</option>
+              <option value="pending">Chờ xử lý</option>
+              <option value="in-progress">Đang làm</option>
+              <option value="completed">Hoàn thành</option>
+            </select>
           </div>
         </div>
 
