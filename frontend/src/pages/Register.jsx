@@ -96,13 +96,7 @@ export default function Register() {
 
             {/* ✅ Hiển thị độ mạnh mật khẩu */}
             {strength.level && (
-              <p
-                style={{
-                  color: strength.color,
-                  fontSize: 14,
-                  marginTop: 4,
-                }}
-              >
+              <p className="password-strength" style={{ color: strength.color }}>
                 Độ mạnh: {strength.level}
               </p>
             )}
@@ -117,7 +111,7 @@ export default function Register() {
 
             {error && <p className="error">{error}</p>}
 
-            <button className="btn" disabled={loading} style={{ marginTop: 12 }}>
+            <button className="btn" disabled={loading}>
               {loading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
             </button>
           </form>
