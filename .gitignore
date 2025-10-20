@@ -1,7 +1,41 @@
-echo "node_modules/
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
 dist/
 build/
-*.env
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
 .vscode/
 .idea/
-.DS_Store" > .gitignore
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+.temp/
+.tmp/
