@@ -52,7 +52,7 @@ export const register = async (req, res) => {
     return res.status(201).json({
       message: "Đăng ký thành công.",
       passwordStrength: strength.level,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
     });
   } catch (err) {
     console.error("Lỗi register:", err);
@@ -105,7 +105,7 @@ export const login = async (req, res) => {
     res.json({
       message: "Đăng nhập thành công.",
       token,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
     });
   } catch (err) {
     console.error("Lỗi login:", err);

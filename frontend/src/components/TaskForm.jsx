@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import "./TaskForm.css";
 
 export default function TaskForm({ task, onSuccess, onCancel }) {
   const [title, setTitle] = useState("");
@@ -63,7 +64,17 @@ export default function TaskForm({ task, onSuccess, onCancel }) {
   };
 
   return (
-    <div className="task-form-container">
+    <div className="task-form-wrapper">
+      {onCancel && (
+        <button 
+          type="button" 
+          className="task-form-close"
+          onClick={onCancel}
+          aria-label="Đóng"
+        >
+          ✕
+        </button>
+      )}
       <h2 className="task-form-title">{task ? "Sửa công việc" : "Thêm công việc mới"}</h2>
       <form onSubmit={handleSubmit} className="task-form">
         <div className="form-group">

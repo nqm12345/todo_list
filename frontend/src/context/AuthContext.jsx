@@ -14,7 +14,11 @@ function generateClientToken() {
 
 export default function AuthProvider({ children }) {
   const stored = localStorage.getItem("token") || null;
+  const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+  
   const [token, setToken] = useState(stored);
+  const [user, setUser] = useState(storedUser);
+  
   const inactivityTimerRef = useRef(null); // 🔥 Timer cho idle timeout
   const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // ⏱️ 1 giờ (3600 giây) không hoạt động
 
@@ -32,6 +36,18 @@ export default function AuthProvider({ children }) {
         confirm,
         username,
       });
+      
+      // 💾 Lưu user info sau khi đăng ký thành công (nếu backend trả về)
+      const userData = res.data?.user;
+      if (userData) {
+        console.log("✅ Đăng ký thành công!");
+        console.log("👤 Thông tin người dùng mới:", {
+          username: userData.username,
+          email: userData.email,
+          id: userData.id
+        });
+      }
+      
       toast.success(res.data.message || "Đăng ký thành công");
       return res;
     } catch (err) {
@@ -46,9 +62,25 @@ export default function AuthProvider({ children }) {
     try {
       const res = await api.post("/auth/login", { email, password });
       const tok = res.data?.token || generateClientToken();
+      const userData = res.data?.user;
       
+      // 💾 Lưu token và user info vào localStorage
       localStorage.setItem("token", tok);
       setToken(tok);
+      
+      if (userData) {
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+        
+        // 📝 Log thông tin user ra console để bạn thấy
+        console.log("✅ Đăng nhập thành công!");
+        console.log("👤 Thông tin người dùng:", {
+          username: userData.username,
+          email: userData.email,
+          id: userData.id
+        });
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      }
       
       // 🔥 Bắt đầu theo dõi inactivity sau khi login
       startInactivityTimer();
@@ -70,9 +102,13 @@ export default function AuthProvider({ children }) {
     }
     
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("lastActivity");
     sessionStorage.removeItem("token");
     setToken(null);
+    setUser(null);
+    
+    console.log("🚪 Đã đăng xuất");
     toast("Đã đăng xuất");
   };
 
@@ -150,15 +186,29 @@ export default function AuthProvider({ children }) {
     }
   }, [token]); // Re-run khi token thay đổi
 
+  // 🔥 Log user info khi component mount (để bạn thấy trong console)
+  useEffect(() => {
+    if (user) {
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("📌 User hiện tại đang đăng nhập:");
+      console.log("👤 Username:", user.username);
+      console.log("📧 Email:", user.email);
+      console.log("🆔 ID:", user.id);
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    }
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{
         token,
+        user, // 🔥 Export user để TaskCard và các components khác có thể dùng
         isAuthenticated: !!token,
         login,
         register,
         logout,
         setToken,
+        setUser, // 🔥 Export setUser
         resetInactivityTimer, // 🔥 Export để các component khác có thể reset timer
       }}
     >
