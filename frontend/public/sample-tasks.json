@@ -1,0 +1,34 @@
+{
+  "tasks": [
+    {
+      "title": "Hoàn thành báo cáo cuối kỳ",
+      "description": "Viết báo cáo chi tiết về dự án Todo App",
+      "status": "in-progress",
+      "dueDate": "2025-11-01"
+    },
+    {
+      "title": "Học React Hooks",
+      "description": "Tìm hiểu về useState, useEffect, useContext",
+      "status": "completed",
+      "dueDate": "2025-10-20"
+    },
+    {
+      "title": "Deploy ứng dụng lên Vercel",
+      "description": "Deploy frontend lên Vercel và backend lên Render",
+      "status": "pending",
+      "dueDate": "2025-10-30"
+    },
+    {
+      "title": "Viết unit tests",
+      "description": "Viết test cho các components chính",
+      "status": "pending"
+    },
+    {
+      "title": "Cải thiện UI/UX",
+      "description": "Thêm animations và loading states",
+      "status": "in-progress",
+      "dueDate": "2025-10-25"
+    }
+  ]
+}
+

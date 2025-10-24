@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import Header from "../components/Header";
 import TaskForm from "../components/TaskForm";
-import TaskList from "../components/TaskList";
+import TaskCard from "../components/TaskCard";
+import ImportExport from "../components/ImportExport";
 import "./Tasks.css";
 
 export default function Tasks() {
@@ -48,7 +50,7 @@ export default function Tasks() {
     setEditingTask(null);
   };
 
-  // ✅ Lọc tasks theo search query và filter status
+  // ✅ Lọc tasks theo search và status
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -63,94 +65,60 @@ export default function Tasks() {
     completed: tasks.filter(t => t.status === "completed").length
   };
 
+  const tasksByStatus = {
+    'all': stats.total,
+    'pending': stats.pending,
+    'in-progress': stats.inProgress,
+    'completed': stats.completed
+  };
+
   return (
-    <div className="tasks-page">
-      <div className="tasks-container">
-        <div className="tasks-header">
-          <div>
-            <h1 className="tasks-title">Quản lý công việc</h1>
-            <p className="tasks-subtitle">Tổ chức và theo dõi công việc hiệu quả</p>
-          </div>
-          <button className="btn-logout" onClick={logout}>
-            🚪 Đăng xuất
-          </button>
-        </div>
+    <div className="simple-layout">
+      {/* Header */}
+      <Header />
 
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-value">{stats.total}</div>
-            <div className="stat-label">Tổng số</div>
-          </div>
-          <div className="stat-card stat-pending">
-            <div className="stat-value">{stats.pending}</div>
-            <div className="stat-label">Chờ xử lý</div>
-          </div>
-          <div className="stat-card stat-progress">
-            <div className="stat-value">{stats.inProgress}</div>
-            <div className="stat-label">Đang làm</div>
-          </div>
-          <div className="stat-card stat-completed">
-            <div className="stat-value">{stats.completed}</div>
-            <div className="stat-label">Hoàn thành</div>
-          </div>
-        </div>
+      {/* Main Content */}
+      <div className="simple-main">
+        <div className="simple-container">
+          {/* Page Header */}
+          <div className="page-header">
+            <h1 className="page-title">
+              Danh sách công việc <span className="page-count">({stats.total})</span>
+            </h1>
 
-        {/* ✅ Search và Filter Bar */}
-        <div className="search-filter-bar">
-          <div className="search-box">
-            <svg className="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Tìm kiếm công việc theo tiêu đề hoặc mô tả..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
+            <div className="page-actions">
+              {/* Import/Export */}
+              <ImportExport 
+                onImportSuccess={fetchTasks} 
+                tasksCount={stats.total}
+                tasksByStatus={tasksByStatus}
+              />
+
+              {/* Add Task Button */}
               <button 
-                className="clear-search"
-                onClick={() => setSearchQuery("")}
-                aria-label="Xóa tìm kiếm"
+                className="btn-add-task"
+                onClick={() => setShowForm(!showForm)}
               >
-                ✕
+                ➕ Thêm công việc
               </button>
-            )}
+            </div>
           </div>
 
-          <div className="filter-box">
-            <label htmlFor="status-filter" className="filter-label">Trạng thái:</label>
-            <select
-              id="status-filter"
-              className="filter-select"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">Tất cả</option>
-              <option value="pending">Chờ xử lý</option>
-              <option value="in-progress">Đang làm</option>
-              <option value="completed">Hoàn thành</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="tasks-content">
-          {!showForm ? (
-            <button
-              className="btn-add-task"
-              onClick={() => setShowForm(true)}
-            >
-              ➕ Thêm công việc mới
-            </button>
-          ) : (
-            <TaskForm
-              task={editingTask}
-              onSuccess={handleSuccess}
-              onCancel={handleCancel}
-            />
+          {/* Task Form (Modal style) */}
+          {showForm && (
+            <div className="task-form-modal">
+              <div className="task-form-overlay" onClick={handleCancel}></div>
+              <div className="task-form-container">
+                <TaskForm
+                  task={editingTask}
+                  onSuccess={handleSuccess}
+                  onCancel={handleCancel}
+                />
+              </div>
+            </div>
           )}
 
+          {/* Loading State */}
           {loading ? (
             <div className="loading-state">
               <div className="spinner"></div>
@@ -158,16 +126,73 @@ export default function Tasks() {
             </div>
           ) : (
             <>
-              {filteredTasks.length === 0 && searchQuery && (
-                <div className="no-results">
-                  <p>Không tìm thấy công việc nào với từ khóa "{searchQuery}"</p>
+              {/* Search & Filter Bar */}
+              {tasks.length > 0 && (
+                <div className="search-filter-bar">
+                  <div className="search-box">
+                    <input
+                      type="text"
+                      placeholder="🔍 Tìm kiếm theo tên công việc..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                      <button 
+                        className="clear-search-btn"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="filter-box">
+                    <label htmlFor="status-filter">Trạng thái:</label>
+                    <select
+                      id="status-filter"
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                      <option value="all">Tất cả</option>
+                      <option value="pending">Chờ xử lý</option>
+                      <option value="in-progress">Đang làm</option>
+                      <option value="completed">Hoàn thành</option>
+                    </select>
+                  </div>
                 </div>
               )}
-              <TaskList
-                tasks={filteredTasks}
-                onEdit={handleEdit}
-                onRefresh={fetchTasks}
-              />
+
+              {/* Empty State */}
+              {tasks.length === 0 && (
+                <div className="empty-state">
+                  <div className="empty-icon">📂</div>
+                  <h3>Chưa có công việc nào</h3>
+                  <p>Nhấn "➕ Thêm công việc" để tạo công việc đầu tiên</p>
+                </div>
+              )}
+
+              {/* No Search Results */}
+              {filteredTasks.length === 0 && searchQuery && tasks.length > 0 && (
+                <div className="no-results">
+                  <div className="empty-icon">🔍</div>
+                  <h3>Không tìm thấy kết quả</h3>
+                  <p>Không có công việc nào phù hợp với "{searchQuery}"</p>
+                </div>
+              )}
+
+              {/* Tasks Grid */}
+              {filteredTasks.length > 0 && (
+                <div className="tasks-grid">
+                  {filteredTasks.map(task => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      onEdit={handleEdit}
+                      onRefresh={fetchTasks}
+                    />
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

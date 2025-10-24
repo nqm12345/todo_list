@@ -1,0 +1,7 @@
+Tiêu đề,Mô tả,Trạng thái,Hạn hoàn thành
+"Hoàn thành báo cáo","Viết báo cáo quý 4","pending","2025-11-01"
+"Họp với khách hàng","Review requirements dự án mới","in-progress","2025-10-30"
+"Code review","Review PR #123 và #124","pending","2025-10-28"
+"Viết unit tests","Tăng coverage lên 80%","pending","2025-11-05"
+"Deploy production","Deploy version 2.0","completed","2025-10-20"
+
