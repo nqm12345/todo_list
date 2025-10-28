@@ -24,6 +24,38 @@ export const escapeCSV = (field) => {
 };
 
 /**
+ * Convert status from English to Vietnamese
+ * @param {string} status - Status in English
+ * @returns {string} Status in Vietnamese
+ */
+const statusToVietnamese = (status) => {
+  const mapping = {
+    'pending': 'Chờ xử lý',
+    'in-progress': 'Đang làm',
+    'completed': 'Hoàn thành'
+  };
+  return mapping[status] || status;
+};
+
+/**
+ * Format date to YYYY-MM-DD (ISO format for Excel compatibility)
+ * @param {Date|string} date - Date to format
+ * @returns {string} Formatted date
+ */
+const formatDateForExcel = (date) => {
+  if (!date) return '';
+  
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+  
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
+
+/**
  * Convert tasks array to CSV string
  * @param {Array} tasks - Array of task objects
  * @returns {string} CSV string
@@ -32,20 +64,16 @@ export const tasksToCSV = (tasks) => {
   // BOM for Excel UTF-8 support
   const BOM = '\uFEFF';
   
-  // CSV header
-  const header = 'Title,Description,Status,Due Date,Created At\n';
+  // CSV header (Tiếng Việt)
+  const header = 'Tiêu đề,Mô tả,Trạng thái,Ngày hết hạn,Ngày tạo\n';
   
   // CSV rows
   const rows = tasks.map(task => {
     const title = escapeCSV(task.title);
-    const description = escapeCSV(task.description);
-    const status = escapeCSV(task.status);
-    const dueDate = task.dueDate 
-      ? escapeCSV(new Date(task.dueDate).toLocaleDateString('vi-VN'))
-      : '';
-    const createdAt = task.createdAt 
-      ? escapeCSV(new Date(task.createdAt).toLocaleDateString('vi-VN'))
-      : '';
+    const description = escapeCSV(task.description || '');
+    const status = escapeCSV(statusToVietnamese(task.status));
+    const dueDate = escapeCSV(formatDateForExcel(task.dueDate));
+    const createdAt = escapeCSV(formatDateForExcel(task.createdAt));
     
     return `${title},${description},${status},${dueDate},${createdAt}`;
   }).join('\n');

@@ -1,0 +1,12 @@
+Title,Description,Status,Due Date
+Hoàn thành báo cáo tháng 10,Tổng hợp và phân tích dữ liệu báo cáo tháng 10/2025,pending,2025-11-05
+Họp team weekly,Họp tổng kết tuần và lên kế hoạch tuần sau,in-progress,2025-10-30
+Review code module auth,Kiểm tra và review code phần authentication,pending,2025-11-01
+Fix bug đăng nhập,Sửa lỗi người dùng không đăng nhập được,in-progress,2025-10-29
+Viết tài liệu API,Viết document cho các API endpoints mới,pending,2025-11-03
+Test tính năng import,Kiểm thử chức năng import/export công việc,completed,2025-10-28
+Cập nhật database,Thêm index và tối ưu query database,pending,2025-11-02
+Gọi điện khách hàng ABC,Tư vấn giải pháp cho khách hàng ABC Corporation,pending,2025-10-31
+Deploy lên production,Deploy phiên bản mới lên server production,pending,2025-11-06
+Backup dữ liệu,Sao lưu toàn bộ dữ liệu hệ thống,completed,2025-10-27
+
