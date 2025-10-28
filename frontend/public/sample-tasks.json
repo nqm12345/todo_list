@@ -1,34 +1,64 @@
 {
   "tasks": [
     {
-      "title": "Hoàn thành báo cáo cuối kỳ",
-      "description": "Viết báo cáo chi tiết về dự án Todo App",
-      "status": "in-progress",
-      "dueDate": "2025-11-01"
-    },
-    {
-      "title": "Học React Hooks",
-      "description": "Tìm hiểu về useState, useEffect, useContext",
-      "status": "completed",
-      "dueDate": "2025-10-20"
-    },
-    {
-      "title": "Deploy ứng dụng lên Vercel",
-      "description": "Deploy frontend lên Vercel và backend lên Render",
+      "title": "Hoàn thành báo cáo tháng 10",
+      "description": "Tổng hợp và phân tích dữ liệu báo cáo tháng 10/2025",
       "status": "pending",
+      "dueDate": "2025-11-05"
+    },
+    {
+      "title": "Họp team weekly",
+      "description": "Họp tổng kết tuần và lên kế hoạch tuần sau",
+      "status": "in-progress",
       "dueDate": "2025-10-30"
     },
     {
-      "title": "Viết unit tests",
-      "description": "Viết test cho các components chính",
-      "status": "pending"
+      "title": "Review code module auth",
+      "description": "Kiểm tra và review code phần authentication",
+      "status": "pending",
+      "dueDate": "2025-11-01"
     },
     {
-      "title": "Cải thiện UI/UX",
-      "description": "Thêm animations và loading states",
+      "title": "Fix bug đăng nhập",
+      "description": "Sửa lỗi người dùng không đăng nhập được",
       "status": "in-progress",
-      "dueDate": "2025-10-25"
+      "dueDate": "2025-10-29"
+    },
+    {
+      "title": "Viết tài liệu API",
+      "description": "Viết document cho các API endpoints mới",
+      "status": "pending",
+      "dueDate": "2025-11-03"
+    },
+    {
+      "title": "Test tính năng import",
+      "description": "Kiểm thử chức năng import/export công việc",
+      "status": "completed",
+      "dueDate": "2025-10-28"
+    },
+    {
+      "title": "Cập nhật database",
+      "description": "Thêm index và tối ưu query database",
+      "status": "pending",
+      "dueDate": "2025-11-02"
+    },
+    {
+      "title": "Gọi điện khách hàng ABC",
+      "description": "Tư vấn giải pháp cho khách hàng ABC Corporation",
+      "status": "pending",
+      "dueDate": "2025-10-31"
+    },
+    {
+      "title": "Deploy lên production",
+      "description": "Deploy phiên bản mới lên server production",
+      "status": "pending",
+      "dueDate": "2025-11-06"
+    },
+    {
+      "title": "Backup dữ liệu",
+      "description": "Sao lưu toàn bộ dữ liệu hệ thống",
+      "status": "completed",
+      "dueDate": "2025-10-27"
     }
   ]
 }
-
